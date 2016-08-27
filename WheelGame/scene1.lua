@@ -13,7 +13,7 @@ local scene = composer.newScene( sceneName )
 
 ---------------------------------------------------------------------------------
 
-local nextSceneButton
+-- local nextSceneButton
 
 function scene:create( event )
     local sceneGroup = self.view
@@ -24,22 +24,55 @@ function scene:create( event )
     -- e.g. add display objects to 'sceneGroup', add touch listeners, etc
 end
 
+local adjustment = 0
+local PI = 3.14159265358
+
+local wheel
+
+local function onWheelTouch(event)
+    local e = event
+    if(e.phase == "began") then
+        local dx = e.x - wheel.x
+        local dy = e.y - wheel.y
+        adjustment = math.atan2(dy,dx) * 180 / PI
+    end
+
+
+    if(e.phase == "moved") then
+        local dx = e.x - wheel.x
+        local dy = e.y - wheel.y
+        wheel.rotation = (math.atan2(dy,dx) * 180 / PI) - adjustment
+end
+end
+
 function scene:show( event )
     local sceneGroup = self.view
     local phase = event.phase
 
     if phase == "will" then
         -- Called when the scene is still off screen and is about to move on screen
-        local title = self:getObjectByName( "Title" )
-        title.x = display.contentWidth / 2
-        title.y = display.contentHeight / 2
-        title.size = display.contentWidth / 10
-        local goToScene2Btn = self:getObjectByName( "GoToScene2Btn" )
-        goToScene2Btn.x = display.contentWidth - 95
-        goToScene2Btn.y = display.contentHeight - 35
-        local goToScene2Text = self:getObjectByName( "GoToScene2Text" )
-        goToScene2Text.x = display.contentWidth - 92
-        goToScene2Text.y = display.contentHeight - 35
+        -- local title = self:getObjectByName( "Title" )
+        -- title.x = display.contentWidth / 2
+        -- title.y = display.contentHeight / 2
+        -- title.size = display.contentWidth / 10
+        -- local goToScene2Btn = self:getObjectByName( "GoToScene2Btn" )
+        -- goToScene2Btn.x = display.contentWidth - 95
+        -- goToScene2Btn.y = display.contentHeight - 35
+        -- local goToScene2Text = self:getObjectByName( "GoToScene2Text" )
+        -- goToScene2Text.x = display.contentWidth - 92
+        -- goToScene2Text.y = display.contentHeight - 35
+
+        local bg = display.newRect(0,0,display.contentWidth, display.contentHeight)
+        bg.anchorX =0
+        bg.anchorY = 0
+        bg:setFillColor(1)
+
+        local wheelDiameter = 250
+        wheel = display.newImage("art/wheel2.png", display.contentWidth/2, display.contentHeight*.7)
+        wheel.width = wheelDiameter
+        wheel.height = wheelDiameter
+        wheel:addEventListener("touch", onWheelTouch)
+
     elseif phase == "did" then
         -- Called when the scene is now on screen
         -- 
@@ -47,18 +80,18 @@ function scene:show( event )
         -- e.g. start timers, begin animation, play audio, etc
         
         -- we obtain the object by id from the scene's object hierarchy
-        nextSceneButton = self:getObjectByName( "GoToScene2Btn" )
-        if nextSceneButton then
-        	-- touch listener for the button
-        	function nextSceneButton:touch ( event )
-        		local phase = event.phase
-        		if "ended" == phase then
-        			composer.gotoScene( "scene2", { effect = "fade", time = 300 } )
-        		end
-        	end
-        	-- add the touch event listener to the button
-        	nextSceneButton:addEventListener( "touch", nextSceneButton )
-        end
+        -- nextSceneButton = self:getObjectByName( "GoToScene2Btn" )
+        -- if nextSceneButton then
+        -- 	-- touch listener for the button
+        -- 	function nextSceneButton:touch ( event )
+        -- 		local phase = event.phase
+        -- 		if "ended" == phase then
+        -- 			composer.gotoScene( "scene2", { effect = "fade", time = 300 } )
+        -- 		end
+        -- 	end
+        -- 	-- add the touch event listener to the button
+        -- 	nextSceneButton:addEventListener( "touch", nextSceneButton )
+        -- end
         
     end 
 end
